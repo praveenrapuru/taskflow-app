@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TaskFlow
 
-## Getting Started
+A simple task management app built with Next.js, Sequelize, and MySQL.
 
-First, run the development server:
+## Features
 
+- User registration and login
+- JWT authentication with HTTP-only cookies
+- Add, update, and delete tasks
+- Task status (To Do, In Progress, Done)
+- Role-based access (User/Admin)
+
+## Tech Stack
+
+- Next.js 16 (App Router)
+- Sequelize ORM
+- MySQL
+- Tailwind CSS
+- bcryptjs for password hashing
+- jsonwebtoken for JWT
+
+## Setup
+
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Create MySQL database:
+```sql
+CREATE DATABASE taskflow;
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Configure environment variables in `.env`:
+```
+DB_NAME=taskflow
+DB_USER=root
+DB_PASSWORD=your_password
+DB_HOST=localhost
+JWT_SECRET=your_secret_key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+5. Open http://localhost:3000
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+app/
+  api/
+    auth/
+      login/route.ts
+      register/route.ts
+      logout/route.ts
+    tasks/route.ts
+  dashboard/page.tsx
+  login/page.tsx
+  register/page.tsx
+lib/
+  auth.ts
+  sequelize.ts
+models/
+  User.ts
+  Task.ts
+middleware.ts
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## API Endpoints
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- POST `/api/auth/register` - Register new user
+- POST `/api/auth/login` - Login user
+- POST `/api/auth/logout` - Logout user
+- GET `/api/tasks` - Get all tasks
+- POST `/api/tasks` - Create task
+- PUT `/api/tasks` - Update task
+- DELETE `/api/tasks` - Delete task
