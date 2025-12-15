@@ -5,31 +5,39 @@ import { generateToken } from "@/lib/auth";
 import { initDB } from "@/lib/sequelize";
 
 export async function POST(req: Request) {
-  await initDB();
+  try {
+    await initDB();
 
-  const { email, password } = await req.json();
+    const { email, password } = await req.json();
 
-  const user = await User.findOne({ where: { email } });
-  if (!user) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    const token = generateToken(user);
+
+    const response = NextResponse.json({ message: "Login successful" });
+
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24,
+      path: "/",
+    });
+
+    return response;
+  } catch (error) {
+    console.error("Login error:", error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Internal server error" },
+      { status: 500 }
+    );
   }
-
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-  }
-
-  const token = generateToken(user);
-
-  const response = NextResponse.json({ message: "Login successful" });
-
-  response.cookies.set("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24,
-    path: "/",
-  });
-
-  return response;
 }

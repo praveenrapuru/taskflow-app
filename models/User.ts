@@ -15,8 +15,11 @@ User.init(
     email: { type: DataTypes.STRING, unique: true },
     password: DataTypes.STRING,
     role: {
-      type: DataTypes.ENUM("USER", "ADMIN"),
-      defaultValue: "USER"
+      type: DataTypes.STRING,
+      defaultValue: "USER",
+      validate: {
+        isIn: [["USER", "ADMIN"]]
+      }
     }
   },
   { sequelize, modelName: "User" }
